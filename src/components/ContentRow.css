@@ -1,0 +1,174 @@
+.content-row {
+  margin-bottom: 40px;
+}
+
+.row-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  padding: 0 40px;
+  color: #fff;
+}
+
+.row-container {
+  position: relative;
+}
+
+.row-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  padding: 0 40px 20px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.row-scroll::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.row-card {
+  flex: 0 0 200px;
+  cursor: pointer;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s, z-index 0s 0.3s;
+  position: relative;
+  background: #1a1a1a;
+}
+
+.row-card:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  transition: transform 0.3s, z-index 0s;
+}
+
+.row-card img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
+.row-card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+  padding: 16px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.row-card:hover .row-card-overlay {
+  opacity: 1;
+}
+
+.row-card-overlay h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.row-card-meta {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+
+.row-card-rating {
+  color: #ffd700;
+}
+
+.row-card-year {
+  color: #999;
+}
+
+.row-card-play {
+  background: #e50914;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+  width: 100%;
+}
+
+.row-card-play:hover {
+  background: #b20710;
+}
+
+/* ARROWS */
+.row-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 4px;
+  width: 50px;
+  height: 150px;
+  color: #fff;
+  font-size: 48px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  opacity: 0;
+}
+
+.row-container:hover .row-arrow {
+  opacity: 1;
+}
+
+.row-arrow:hover {
+  background: rgba(0, 0, 0, 0.9);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.row-arrow-left {
+  left: 0;
+}
+
+.row-arrow-right {
+  right: 0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .row-title {
+    font-size: 20px;
+    padding: 0 20px;
+  }
+
+  .row-scroll {
+    padding: 0 20px 20px;
+  }
+
+  .row-card {
+    flex: 0 0 150px;
+  }
+
+  .row-card img {
+    height: 225px;
+  }
+
+  .row-arrow {
+    display: none; /* Nascondi frecce su mobile */
+  }
+}

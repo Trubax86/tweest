@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TWEEST - Configurazione CB01</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            color: #e50914;
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .subtitle {
+            color: #999;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .info-box {
+            background: #2a2a2a;
+            border-left: 4px solid #e50914;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .current-domain {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #ccc;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #e50914;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background: #e50914;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #b8070f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+        }
+
+        .btn-cancel {
+            background: #444;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #555;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .message.success {
+            background: #2a5a2a;
+            border: 1px solid #4CAF50;
+            color: #4CAF50;
+        }
+
+        .message.error {
+            background: #5a2a2a;
+            border: 1px solid #f44336;
+            color: #f44336;
+        }
+
+        .restart-warning {
+            background: #5a4a2a;
+            border: 1px solid #ff9800;
+            color: #ff9800;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .restart-warning strong {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .restart-instructions {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .restart-instructions code {
+            background: #2a2a2a;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌐 Configurazione CB01</h1>
+        <p class="subtitle">Gestisci il dominio CB01 per TWEEST Web</p>
+
+        <div class="info-box">
+            <p><strong>Dominio attuale:</strong></p>
+            <p class="current-domain" id="currentDomain">Caricamento...</p>
+        </div>
+
+        <label for="domainInput">Nuovo Dominio CB01:</label>
+        <input type="text" id="domainInput" placeholder="https://cb01net.online" />
+
+        <div class="button-group">
+            <button class="btn-save" onclick="saveDomain()">💾 Salva Dominio</button>
+            <button class="btn-cancel" onclick="window.location.href='index.html'">Annulla</button>
+        </div>
+
+        <div class="message" id="message"></div>
+
+        <div class="restart-warning" id="restartWarning">
+            <strong>⚠️ Riavvio Server Richiesto</strong>
+            <div class="restart-instructions">
+                <p><strong>Su Windows:</strong></p>
+                <ol>
+                    <li>Esegui <code>restart-server.bat</code> nella cartella TweestWeb</li>
+                    <li>Oppure chiudi il terminale Node.js e riavvialo manualmente</li>
+                </ol>
+                <p style="margin-top: 10px;"><strong>Su Linux/Mac:</strong></p>
+                <ol>
+                    <li>Premi <code>Ctrl+C</code> nel terminale del server</li>
+                    <li>Riavvia con <code>node api/server.js</code></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3001';
+
+        // Carica dominio corrente all'avvio
+        async function loadCurrentDomain() {
+            try {
+                const response = await fetch(`${API_URL}/api/config/dominio`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('currentDomain').textContent = data.dominio;
+                    document.getElementById('domainInput').value = data.dominio;
+                }
+            } catch (error) {
+                showMessage('Errore caricamento dominio: ' + error.message, 'error');
+            }
+        }
+
+        // Salva nuovo dominio
+        async function saveDomain() {
+            const dominio = document.getElementById('domainInput').value.trim();
+            
+            if (!dominio) {
+                showMessage('Inserisci un dominio valido!', 'error');
+                return;
+            }
+
+            if (!dominio.startsWith('http://') && !dominio.startsWith('https://')) {
+                showMessage('Il dominio deve iniziare con http:// o https://', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/config/dominio`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ dominio })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage('✅ ' + data.message, 'success');
+                    document.getElementById('currentDomain').textContent = data.dominio;
+                    
+                    if (data.requiresRestart) {
+                        document.getElementById('restartWarning').style.display = 'block';
+                    }
+                } else {
+                    showMessage('❌ ' + data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Errore salvataggio: ' + error.message, 'error');
+            }
+        }
+
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = 'message ' + type;
+            messageEl.style.display = 'block';
+
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 5000);
+        }
+
+        // Carica dominio all'avvio
+        loadCurrentDomain();
+    </script>
+</body>
+</html>
